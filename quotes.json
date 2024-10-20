@@ -6,15 +6,38 @@
         "backAuthor": "Nobody"
     },
     {
-        "frontQuote": "Do not dwell in the past, do not dream of the future, concentrate the mind on the present moment.",
-        "frontAuthor": "Buddha",
-        "backQuote": "Life is what happens when you're busy making other plans.",
-        "backAuthor": "John Lennon"
+        "frontQuote": "If you think nobody cares,",
+        "frontAuthor": "Unknown",
+        "backQuote": "try missing a couple of payments.",
+        "backAuthor": "Unknown"
     },
     {
-        "frontQuote": "Success is not final, failure is not fatal: It is the courage to continue that counts.",
-        "frontAuthor": "Winston Churchill",
-        "backQuote": "It is our choices that show what we truly are, far more than our abilities.",
-        "backAuthor": "J.K. Rowling"
+        "frontQuote": "I finally got around to reading that book",
+        "frontAuthor": "Unknown",
+        "backQuote": "on anti-gravity. I can't put it down!",
+        "backAuthor": "Unknown"
+    },{
+        "frontQuote": "I can't believe I got fired from the calendar factory.",
+        "frontAuthor": "Unknown",
+        "backQuote": "All I did was take a day off!",
+        "backAuthor": "Unknown"
+    },
+    {
+        "frontQuote": "I told my computer I needed a break.",
+        "frontAuthor": "Unknown",
+        "backQuote": "Now it won't stop sending me KitKat ads.",
+        "backAuthor": "Unknown"
+    },
+    {
+        "frontQuote": "I'm on a seafood diet.",
+        "frontAuthor": "Unknown",
+        "backQuote": "I see food, and I eat it.",
+        "backAuthor": "Unknown"
+    },
+    {
+        "frontQuote": "I used to be indecisive.",
+        "frontAuthor": "Unknown",
+        "backQuote": "But now I'm not so sure.",
+        "backAuthor": "Unknown"
     }
 ]
