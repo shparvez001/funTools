@@ -160,6 +160,51 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 650px) {
+            nav h3 {
+                font-size: 1.2em;
+            }
+
+            .card-grid {
+                padding-top: 50px;
+                padding-left: 5%;
+                padding-right: 5%;
+            }
+
+            .quote-text {
+                font-size: 1.2em;
+            }
+
+            .quote-author {
+                font-size: 1em;
+            }
+
+            #loadMore {
+                font-size: 1em;
+                padding: 8px 15px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .flip-card {
+                height: 200px;
+            }
+
+            .quote-text {
+                font-size: 1em;
+            }
+
+            .quote-icon {
+                font-size: 2em;
+            }
+
+            #loadMore {
+                font-size: 0.9em;
+                padding: 6px 10px;
+            }
+        }    
     </style>
 
 
