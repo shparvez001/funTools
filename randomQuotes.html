@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Great Quotes</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('img/background.jpg'); /* Replace with your image path */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #fff;
+        }
+
+        /* Top Menu */
+        nav {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        nav ul li a:hover {
+            color: #f39c12;
+        }
+
+
+        nav h3 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #fff;
+        }
+
+        /* Cards Container */
+        .card-grid {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 70px; /* Add padding to avoid overlap with the menu */
+            padding-bottom: 100px;
+            /*row-gap: 50px;  Adds space between cards */
+        }
+
+        .card-container {
+            perspective: 1000px;
+            margin: 40px 0; /* Increase margin for space between cards */
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .flip-card {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            transition: transform 1.6s ease-in-out;
+            transform-style: preserve-3d;
+            transform-origin: center center; /* Ensures flipping happens at the center */
+        }
+
+        .flip-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.75); /* Slight transparency */
+            color: #333;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .card-front {
+            background-color: rgba(255, 255, 255, 0.75); /* Ensure both sides have equal padding and color */
+        }
+
+        .card-back {
+            background-color: rgba(52, 152, 219, 0.75);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .quote-icon {
+            font-size: 3em;
+            color: #f39c12;
+            margin-bottom: 10px;
+        }
+
+        .quote-text {
+            font-size: 1.5em;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .quote-author {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        #loadMore, #singleQuote, #toggleMode {
+        background-color: #f39c12; /* Primary color for the button */
+        color: #fff; /* Text color */
+        border: none; /* No border */
+        border-radius: 5px; /* Slightly rounded corners */
+        padding: 10px 20px; /* Vertical and horizontal padding */
+        font-size: 1.2em; /* Font size */
+        cursor: pointer; /* Pointer cursor on hover */
+        margin: 20px auto; /* Center the button */
+        display: block; /* Ensure it behaves as a block element */
+        transition: background-color 0.3s, transform 0.3s; /* Transition effects */
+        text-align: center; /* Center align text */
+    }
+
+    #loadMore:hover, #singleQuote:hover, #toggleMode:hover  {
+        background-color: #e67e22; /* Darker shade on hover */
+        transform: scale(1.05); /* Slightly grow on hover */
+    }
+
+    .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3); /* Light border */
+        border-top: 4px solid #fff; /* White top border for the spinner effect */
+        border-radius: 50%; /* Make it circular */
+        width: 20px; /* Width of the spinner */
+        height: 20px; /* Height of the spinner */
+        animation: spin 1s linear infinite; /* Spin animation */
+        display: inline-block; /* Display inline with text */
+        margin-right: 10px; /* Space between spinner and text */
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 650px) {
+            nav h3 {
+                font-size: 1.2em;
+            }
+
+            .card-grid {
+                padding-top: 60px;
+                padding-left: 5%;
+                padding-right: 5%;
+            }
+
+            .quote-text {
+                font-size: 1.2em;
+            }
+
+            .quote-author {
+                font-size: 1em;
+            }
+
+            #loadMore {
+                font-size: 1em;
+                padding: 8px 15px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .flip-card {
+                height: 200px;
+            }
+
+            .quote-text {
+                font-size: 1em;
+            }
+
+            .quote-icon {
+                font-size: 2em;
+            }
+
+            #loadMore {
+                font-size: 0.9em;
+                padding: 6px 10px;
+            }
+        }    
+    </style>
+
+
+</head>
+<body>
+
+    <!-- Top Navigation Menu -->
+    <nav>
+        
+        <h3>Great Quotes Nobody is Referencing</h3>
+        <!--<ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Quotes</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>*-->
+    </nav>
+
+    <!-- Single Quote Card -->
+    <!-- <div class="card-container" id="singleCard" style="display: none;">
+        <div class="flip-card" id="quoteCard">
+            <div class="card-side card-front" id="cardFront"></div>
+            <div class="card-side card-back" id="cardBack"></div>
+        </div>
+    </div> -->
+
+    <!-- Cards Section -->
+    <div class="card-grid" id="cardGrid">
+        <!-- Cards will be inserted here dynamically -->
+    </div>
+
+    <!-- Toggle Mode Button -->
+    <div class="button-container">
+        <button id="toggleMode">Switch to Single Random Quote</button>
+    </div>
+    
+    <button id="loadMore" style="display: none;">
+        <span id="loadingSpinner" class="spinner" style="display: none;"></span>
+        <span id="loadButtonText">Load More Quotes</span>
+    </button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentIndex = 0; // Keep track of the current index of quotes
+            const quotesPerLoad = 2; // Number of quotes to load each time
+            let allQuotes = []; // Store all quotes
+            let singleQuoteMode = true; // Track which mode is active
+
+            // Toggle between modes
+            document.getElementById('toggleMode').addEventListener('click', function () {
+                singleQuoteMode = !singleQuoteMode;
+                // document.getElementById('singleCard').style.display = singleQuoteMode ? 'flex' : 'none';
+                // document.getElementById('cardGrid').style.display = singleQuoteMode ? 'none' : 'flex';
+                // document.getElementById('loadMore').style.display = singleQuoteMode ? 'none' : 'block';
+                this.innerText = singleQuoteMode ? 'Switch to Multiple Quotes' : 'Switch to Single Random Quote';
+                if (singleQuoteMode) loadRandomQuote();
+            });
+
+            // Function to load a random quote for single quote mode
+            function loadRandomQuote() {
+                const randomQuote = allQuotes[Math.floor(Math.random() * allQuotes.length)];
+                // document.getElementById("cardFront").innerHTML = `
+                //     <div class="quote-text">"${randomQuote.frontQuote}"</div>
+                //     <div class="quote-author">- ${randomQuote.frontAuthor}</div>
+                // `;
+                // document.getElementById("cardBack").innerHTML = `
+                //     <div class="quote-text">"${randomQuote.backQuote}"</div>
+                //     <div class="quote-author">- ${randomQuote.backAuthor}</div>
+                // `;
+                createFlipCard(randomQuote)
+            }
+
+            // Function to create a flip card for multiple quotes mode
+            function createFlipCard(quoteData) {
+                console.log("HEHEHEHEH");
+                
+                const cardContainer = document.createElement("div");
+                cardContainer.classList.add("card-container");
+
+                const flipCard = document.createElement("div");
+                flipCard.classList.add("flip-card");
+
+                const frontSide = document.createElement("div");
+                frontSide.classList.add("card-side", "card-front");
+                frontSide.innerHTML = `
+                    <div class="quote-icon">“</div>
+                    <div class="quote-text">"${quoteData.frontQuote}"</div>
+                    <div class="quote-author">- ${quoteData.frontAuthor}</div>
+                `;
+
+                const backSide = document.createElement("div");
+                backSide.classList.add("card-side", "card-back");
+                backSide.innerHTML = `
+                    <div class="quote-text">"${quoteData.backQuote}"</div>
+                    <div class="quote-author">- ${quoteData.backAuthor}</div>
+                `;
+
+                flipCard.appendChild(frontSide);
+                flipCard.appendChild(backSide);
+                cardContainer.appendChild(flipCard);
+
+                // Add click event to flip the card
+                flipCard.addEventListener("click", function () {
+                    flipCard.classList.toggle("flipped");
+                });
+
+                return cardContainer;
+            }
+
+            // Function to load quotes from JSON file
+            function loadQuotes() {
+                fetch('quotes.json')
+                    .then(response => response.json())
+                    .then(quotes => {
+                        allQuotes = quotes; // Store all quotes in a global variable
+                        loadMoreQuotes(); // Load the first set of quotes
+                        document.getElementById('loadMore').style.display = 'block'; // Show the Load More button
+                    })
+                    .catch(error => console.error('Error loading quotes:', error));
+            }
+
+            // Function to load more quotes in multiple quotes mode
+            function loadMoreQuotes() {
+                const loadMoreButton = document.getElementById('loadMore');
+                const loadingSpinner = document.getElementById('loadingSpinner');
+                const loadButtonText = document.getElementById('loadButtonText');
+
+                loadingSpinner.style.display = 'inline-block';
+                loadButtonText.innerText = 'Loading Quotes';
+                loadMoreButton.disabled = true;
+
+                setTimeout(() => {
+                    const cardGrid = document.getElementById("cardGrid");
+                    const nextQuotes = allQuotes.slice(currentIndex, currentIndex + quotesPerLoad);
+                    nextQuotes.forEach(quoteData => {
+                        const card = createFlipCard(quoteData);
+                        cardGrid.appendChild(card);
+                    });
+                    currentIndex += nextQuotes.length;
+
+                    loadingSpinner.style.display = 'none';
+                    loadButtonText.innerText = 'Load More Quotes';
+                    loadMoreButton.disabled = false;
+
+                    if (currentIndex >= allQuotes.length) {
+                        loadMoreButton.style.display = 'none';
+                    }
+                }, 500);
+            }
+
+            loadQuotes();
+
+            document.getElementById('loadMore').addEventListener('click', loadMoreQuotes);
+        });
+    </script>
+
+</body>
+</html>
