@@ -245,7 +245,7 @@
 
     <!-- Toggle Mode Button -->
     <div class="button-container">
-        <button id="toggleMode">Switch to Single Random Quote</button>
+        <button id="toggleMode">Switch to Multiple Quotes</button>
     </div>
     
     <button id="loadMore" style="display: none;">
@@ -268,6 +268,7 @@
                 // document.getElementById('loadMore').style.display = singleQuoteMode ? 'none' : 'block';
                 this.innerText = singleQuoteMode ? 'Switch to Multiple Quotes' : 'Switch to Single Random Quote';
                 if (singleQuoteMode) loadRandomQuote();
+                else loadMoreQuotes();
             });
 
             // Function to load a random quote for single quote mode
@@ -281,13 +282,15 @@
                 //     <div class="quote-text">"${randomQuote.backQuote}"</div>
                 //     <div class="quote-author">- ${randomQuote.backAuthor}</div>
                 // `;
-                createFlipCard(randomQuote)
+                //createFlipCard(randomQuote);
+                const card = createFlipCard(randomQuote);
+                const cardGrid = document.getElementById("cardGrid");
+                cardGrid.innerHTML = ''; // Clear existing cards
+                cardGrid.appendChild(card);
             }
 
             // Function to create a flip card for multiple quotes mode
             function createFlipCard(quoteData) {
-                console.log("HEHEHEHEH");
-                
                 const cardContainer = document.createElement("div");
                 cardContainer.classList.add("card-container");
 
@@ -327,6 +330,8 @@
                     .then(response => response.json())
                     .then(quotes => {
                         allQuotes = quotes; // Store all quotes in a global variable
+                        if (singleQuoteMode) loadRandomQuote(); // Load a random quote
+                        else
                         loadMoreQuotes(); // Load the first set of quotes
                         document.getElementById('loadMore').style.display = 'block'; // Show the Load More button
                     })
@@ -361,8 +366,8 @@
                     }
                 }, 500);
             }
-
             loadQuotes();
+            //loadRandomQuote();
 
             document.getElementById('loadMore').addEventListener('click', loadMoreQuotes);
         });
