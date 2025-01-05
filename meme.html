@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme Generator Pro+</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; }
+        .container { margin: 20px auto; max-width: 600px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        canvas { border: 1px solid #ddd; cursor: grab; max-width: 100%; }
+        #dropArea { border: 2px dashed #007BFF; padding: 20px; cursor: pointer; margin: 10px 0; }
+        #dropArea:hover { background: #e8f0fe; }
+        button { background: #007BFF; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .emoji { font-size: 40px; cursor: pointer; }
+        #stickers { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Meme Generator Pro+</h1>
+
+        <!-- Drag and Drop Section -->
+        <div id="dropArea">Drag & Drop Image or GIF Here or Click to Upload</div>
+        <input type="file" id="imageUpload" accept="image/*,video/gif" style="display:none;">
+
+        <!-- Text Inputs -->
+        <input type="text" id="topText" placeholder="Top Text" value="Top Text">
+        <input type="number" id="topTextSize" value="40" min="10" max="100">
+        <input type="text" id="bottomText" placeholder="Bottom Text" value="Bottom Text">
+        <input type="number" id="bottomTextSize" value="40" min="10" max="100">
+
+        <!-- Stickers and Emojis -->
+        <div id="stickers">
+            <span class="emoji">😂</span>
+            <span class="emoji">🔥</span>
+            <span class="emoji">🎉</span>
+            <span class="emoji">❤️</span>
+            <span class="emoji">👍</span>
+        </div>
+
+        <!-- Canvas -->
+        <canvas id="memeCanvas"></canvas>
+        
+        <!-- Download Button -->
+        <button id="downloadMeme">Download Meme</button>
+    </div>
+
+    <script>
+        const dropArea = document.getElementById('dropArea');
+        const imageUpload = document.getElementById('imageUpload');
+        const memeCanvas = document.getElementById('memeCanvas');
+        const ctx = memeCanvas.getContext('2d');
+        const topTextInput = document.getElementById('topText');
+        const bottomTextInput = document.getElementById('bottomText');
+        const topTextSizeInput = document.getElementById('topTextSize');
+        const bottomTextSizeInput = document.getElementById('bottomTextSize');
+        const downloadMemeButton = document.getElementById('downloadMeme');
+        const emojis = document.querySelectorAll('.emoji');
+        
+        let uploadedImage;
+        let stickers = [];
+        let gifLoaded = false;
+
+        // Load image or GIF
+        function loadImage(src, isGif = false) {
+            if (isGif) {
+                const gif = document.createElement('img');
+                gif.src = src;
+                gif.onload = () => {
+                    memeCanvas.width = gif.width;
+                    memeCanvas.height = gif.height;
+                    ctx.drawImage(gif, 0, 0);
+                    gifLoaded = true;
+                };
+            } else {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = src;
+                img.onload = () => {
+                    memeCanvas.width = img.width;
+                    memeCanvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    uploadedImage = img;
+                    gifLoaded = false;
+                };
+            }
+        }
+
+        // Drag & Drop
+        dropArea.addEventListener('click', () => imageUpload.click());
+        dropArea.addEventListener('dragover', (e) => { e.preventDefault(); dropArea.style.background = "#e8f0fe"; });
+        dropArea.addEventListener('dragleave', () => dropArea.style.background = "#fff");
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            const fileType = file.type.includes('gif') ? 'gif' : 'image';
+            const reader = new FileReader();
+            reader.onload = (e) => loadImage(e.target.result, fileType === 'gif');
+            reader.readAsDataURL(file);
+        });
+
+        imageUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const fileType = file.type.includes('gif') ? 'gif' : 'image';
+            const reader = new FileReader();
+            reader.onload = (e) => loadImage(e.target.result, fileType === 'gif');
+            reader.readAsDataURL(file);
+        });
+
+        // Meme Generation
+        function drawMeme() {
+            if (!uploadedImage && !gifLoaded) return;
+            ctx.clearRect(0, 0, memeCanvas.width, memeCanvas.height);
+            if (uploadedImage) ctx.drawImage(uploadedImage, 0, 0);
+            ctx.font = `${topTextSizeInput.value}px Impact`;
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 2;
+            ctx.textAlign = 'center';
+
+            ctx.fillText(topTextInput.value.toUpperCase(), memeCanvas.width / 2, 50);
+            ctx.strokeText(topTextInput.value.toUpperCase(), memeCanvas.width / 2, 50);
+            ctx.fillText(bottomTextInput.value.toUpperCase(), memeCanvas.width / 2, memeCanvas.height - 20);
+            ctx.strokeText(bottomTextInput.value.toUpperCase(), memeCanvas.width / 2, memeCanvas.height - 20);
+
+            stickers.forEach(sticker => {
+                ctx.font = `${sticker.size}px Arial`;
+                ctx.fillText(sticker.emoji, sticker.x, sticker.y);
+            });
+        }
+
+        // Add Emoji as Stickers
+        emojis.forEach(emoji => {
+            emoji.addEventListener('click', () => {
+                stickers.push({ emoji: emoji.innerText, x: memeCanvas.width / 2, y: memeCanvas.height / 2, size: 60 });
+                drawMeme();
+            });
+        });
+
+        memeCanvas.addEventListener('mousedown', (event) => {
+            const rect = memeCanvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            stickers.forEach(sticker => {
+                if (Math.hypot(mouseX - sticker.x, mouseY - sticker.y) < 50) {
+                    sticker.dragging = true;
+                }
+            });
+        });
+
+        memeCanvas.addEventListener('mousemove', (event) => {
+            const rect = memeCanvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            stickers.forEach(sticker => {
+                if (sticker.dragging) {
+                    sticker.x = mouseX;
+                    sticker.y = mouseY;
+                    drawMeme();
+                }
+            });
+        });
+
+        memeCanvas.addEventListener('mouseup', () => {
+            stickers.forEach(sticker => sticker.dragging = false);
+        });
+
+        downloadMemeButton.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'meme.png';
+            link.href = memeCanvas.toDataURL('image/png');
+            link.click();
+        });
+
+        [topTextInput, bottomTextInput, topTextSizeInput, bottomTextSizeInput].forEach(element => {
+            element.addEventListener('input', drawMeme);
+        });
+
+        loadImage('https://i.imgflip.com/1bij.jpg');
+    </script>
+</body>
+</html>
