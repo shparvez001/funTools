@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Click Color Changer</title>
+    <title>Fidget Clicker</title>
     <style>
         body {
             margin: 0;
@@ -11,6 +11,7 @@
             align-items: center;
             transition: background-color 0.3s ease;
             cursor: pointer;
+            flex-direction: column;
         }
         #counter {
             font-size: 5em;
@@ -18,13 +19,22 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             user-select: none;
         }
+        #cpm {
+            font-size: 2em;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            user-select: none;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div id="counter">0</div>
+    <div id="cpm">0 CPM</div>
 
     <script>
         let clickCount = 0;
+        let clickTimes = [];
         
         function getRandomColor() {
             const r = Math.floor(Math.random() * 256);
@@ -33,11 +43,24 @@
             return `rgb(${r},${g},${b})`;
         }
 
+        function updateCPM() {
+            const now = Date.now();
+            // Filter clicks that occurred in the last minute
+            clickTimes = clickTimes.filter(time => now - time < 60000);
+            const cpm = clickTimes.length;
+            document.getElementById('cpm').textContent = `${cpm} CPM`;
+        }
+
         document.addEventListener('click', () => {
             clickCount++;
+            clickTimes.push(Date.now());
             document.body.style.backgroundColor = getRandomColor();
             document.getElementById('counter').textContent = clickCount;
+            updateCPM();
         });
+
+        // Update CPM every second
+        setInterval(updateCPM, 1000);
     </script>
 </body>
 </html>
