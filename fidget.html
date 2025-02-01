@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Click Color Changer</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+        #counter {
+            font-size: 5em;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="counter">0</div>
+
+    <script>
+        let clickCount = 0;
+        
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r},${g},${b})`;
+        }
+
+        document.addEventListener('click', () => {
+            clickCount++;
+            document.body.style.backgroundColor = getRandomColor();
+            document.getElementById('counter').textContent = clickCount;
+        });
+    </script>
+</body>
+</html>
